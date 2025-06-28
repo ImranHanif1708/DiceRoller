@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,21 +27,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
     fun DiceWithButtonAndImage(
-    viewModel: DiceViewModel = viewModel(),
-    modifier: Modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
+    viewModel: DiceViewModel = viewModel(),modifier : Modifier = Modifier
     ) {
-
-
-
-
+        val diceUiState  by viewModel.diceUiState.collectAsState()
         Column(
             modifier = modifier
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Total Rolls = ${viewModel.totalrolls}")
+            Text("Total Rolls = ${diceUiState.totalrolls}")
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -47,7 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 for (i in 1..3) {
-                    Text("No.$i : ${viewModel.diceCounts[i - 1]}")
+                    Text("No.$i : ${diceUiState.diceCounts[i - 1]}")
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -56,7 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 for (i in 4..6) {
-                    Text("No.$i : ${viewModel.diceCounts[i - 1]}")
+                    Text("No.$i : ${diceUiState.diceCounts[i - 1]}")
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

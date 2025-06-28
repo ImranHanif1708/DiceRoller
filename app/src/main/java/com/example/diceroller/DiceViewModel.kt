@@ -6,14 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.diceroller.models.DiceUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class DiceViewModel : ViewModel() {
 
-    val diceCounts = mutableStateListOf(0, 0, 0, 0, 0, 0)
-    var totalrolls by mutableStateOf(0)
+    private val _diceUiState = MutableStateFlow(DiceUiState())
+    val diceUiState : StateFlow<DiceUiState> = _diceUiState.asStateFlow()
 
-    var result by  mutableStateOf(1)
-    var imageResource = when (result) {
+     var imageResource = when (_diceUiState.value.result) {
         1 -> R.drawable.dice_1
         2 -> R.drawable.dice_2
         3 -> R.drawable.dice_3
@@ -24,8 +28,18 @@ class DiceViewModel : ViewModel() {
 
     fun onButtonClicked() {
         // Logic to handle button click
-        result = (1..6).random()
-        totalrolls++
-        diceCounts[result - 1]++
+        _diceUiState.update { currentState ->
+            currentState.copy(
+                result = (1..6).random(),
+                totalrolls = currentState.totalrolls + 1,
+                diceCounts = currentState.diceCounts.toMutableList().apply {
+                    val result = currentState.result
+                    this[result - 1] = this[result - 1] + 1
+                }
+            )
+        }
+//        _diceUiState.value.result = (1..6).random()
+//        _diceUiState.value.totalrolls++
+//        diceCounts[result - 1]++
     }
 }
